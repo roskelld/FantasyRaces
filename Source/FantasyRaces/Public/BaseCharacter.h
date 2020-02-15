@@ -1,4 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+/**
+* Copyright PrimeVR 2020
+* @author       roskelld https://github.com/roskelld
+* @description
+* @version      0.1
+*/
 
 #pragma once
 
@@ -28,23 +33,58 @@ protected:
 	FName CameraAttachSocketName;
 
 	// Movement Functions
-
 	void MoveForward(float Value);
 
 	void MoveRight(float Value);
 
-	void StartFocus();
+	void StartCreep();
 
-	void EndFocus();
+	void EndCreep();
 
+	void ToggleCreep();
+
+	void StartJog();
+
+	void EndJog();
+
+	void ToggleJog();
+
+	void StartSprint();
+
+	void EndSprint();
+
+	void ToggleSprint();
+
+	// Pose Functions
 	void StartCrouch();
 
 	void EndCrouch();
 
 	void ToggleCrouch();
 
+	void StartProne();
 
+	void EndProne();
 
+	void ToggleProne();
+
+	// Vision Functions
+	void StartFocus();
+
+	void EndFocus();
+
+	void StartFreelook();
+
+	void EndFreelook();
+
+	// Interaction
+	void Interact();
+
+	// Action
+
+	void StartGestureWave();
+
+	void EndGestureWave();
 
 	bool bRequestedFocus; 
 
@@ -60,8 +100,22 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Player", meta = (ClampMin = 0.1, ClampMax = 100))
 	float FocusInterpSpeed;
 
+	/* Offset position of camera. Currently used mainly to avoid clipping with character mesh */
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
 	FVector CameraOffset;
+
+	/* Height of character in cm. Default Character is 183cm */
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	float CharacterHeight;
+
+	/* Radius of character in cm */
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	float CharacterRadius;
+
+	void SetCharacterSize();
+
+	/* This is the height of the default mesh used to scale */
+	float DefaultCharacterHeight;
 
 public:	
 	// Called every frame
