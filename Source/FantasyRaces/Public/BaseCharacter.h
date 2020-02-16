@@ -26,6 +26,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	/* Height of character in cm. Default Character is 183cm */
+	UPROPERTY(EditDefaultsOnly, Category = "Debug")
+	bool bShowDebug;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UCameraComponent* CameraComp;
 
@@ -43,17 +47,23 @@ protected:
 
 	void ToggleCreep();
 
+	bool bRequestedCreep;
+
 	void StartJog();
 
 	void EndJog();
 
 	void ToggleJog();
 
+	bool bRequestedJog;
+
 	void StartSprint();
 
 	void EndSprint();
 
 	void ToggleSprint();
+
+	bool bRequestedSprint;
 
 	// Pose Functions
 	void StartCrouch();
@@ -68,10 +78,17 @@ protected:
 
 	void ToggleProne();
 
+	bool bRequestedProne;
+
 	// Vision Functions
 	void StartFocus();
 
 	void EndFocus();
+
+	bool bRequestedFreelook;
+
+	FVector LastForwardVector;
+	FVector LastRightVector;
 
 	void StartFreelook();
 
@@ -103,6 +120,31 @@ protected:
 	/* Offset position of camera. Currently used mainly to avoid clipping with character mesh */
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
 	FVector CameraOffset;
+
+	/* Default Maximum Prone Speed */
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	float CharacterMaxProneSpeed;
+
+	/* Default Maximum Crouch Speed */
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	float CharacterMaxCrouchSpeed;
+
+	/* Default Maximum Creep Speed */
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	float CharacterMaxCreepSpeed;
+
+	/* Default Maximum Walk Speed */
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	float CharacterMaxWalkSpeed;
+
+	/* Default Maximum Jog Speed */
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	float CharacterMaxJogSpeed;
+	
+	/* Default Maximum Sprint Speed */
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	float CharacterMaxSprintSpeed;
+
 
 	/* Height of character in cm. Default Character is 183cm */
 	UPROPERTY(EditDefaultsOnly, Category = "Player")

@@ -41,6 +41,25 @@ ABaseCharacter::ABaseCharacter()
 	// @TODO: 
 	// Edit Jump height
 	// Edit weight / mass
+
+	// Vision
+	bRequestedFreelook = false;
+
+	// Movement
+	CharacterMaxProneSpeed = 150.0f;
+	CharacterMaxCrouchSpeed = 250.0f;
+	CharacterMaxCreepSpeed = 250.0f;
+	CharacterMaxWalkSpeed = 400.0f;
+	CharacterMaxJogSpeed = 600.0f;
+	CharacterMaxSprintSpeed = 800.0f;
+
+	bRequestedCreep = false;
+	bRequestedJog = false;
+	bRequestedSprint = false;
+	bRequestedProne = false;
+
+	// DEBUG
+	bShowDebug = true;
 }
 
 // Called when the game starts or when spawned
@@ -57,6 +76,10 @@ void ABaseCharacter::BeginPlay()
 	// Update FOV
 	CameraComp->SetFieldOfView(DefaultFOV);
 
+	// Vision
+	LastForwardVector = GetActorForwardVector();
+	LastRightVector = GetActorRightVector();
+
 	// Only run on the server
 	//if (GetLocalRole() == ROLE_Authority)
 	//{
@@ -68,54 +91,90 @@ void ABaseCharacter::BeginPlay()
 
 	// Set Camera offset to match face location
 	CameraComp->SetRelativeLocation(CameraOffset);
+
+	// Movement
+	GetCharacterMovement()->MaxWalkSpeedCrouched = CharacterMaxCrouchSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = CharacterMaxWalkSpeed;
 }
 
 // Character Movement 
 void ABaseCharacter::MoveForward(float Value)
 {
-	AddMovementInput(GetActorForwardVector() * Value);
+	if (!bRequestedFreelook) 
+	{
+		LastForwardVector = GetActorForwardVector();
+	}
+
+	AddMovementInput(LastForwardVector * Value);
 }
 
 void ABaseCharacter::MoveRight(float Value)
 {
-	AddMovementInput(GetActorRightVector() * Value);
+	if (!bRequestedFreelook)
+	{
+		LastRightVector = GetActorRightVector();
+	}
+	AddMovementInput(LastRightVector * Value);
 }
 
 void ABaseCharacter::StartCreep()
 {
+	if (bShowDebug)	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Yellow, TEXT("START CREEP"), true, FVector2D(1.0f));
+	bRequestedCreep = true;
+	GetCharacterMovement()->MaxWalkSpeed = CharacterMaxCreepSpeed;
 
 }
 
 void ABaseCharacter::EndCreep()
 {
+	if (bShowDebug)	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Yellow, TEXT("END CREEP"), true, FVector2D(1.0f));
+	bRequestedCreep = false;
 }
 
 void ABaseCharacter::ToggleCreep()
 {
+	bRequestedCreep = !bRequestedCreep;
+	if (bRequestedCreep) GetCharacterMovement()->MaxWalkSpeed = CharacterMaxCreepSpeed;
 }
 
 void ABaseCharacter::StartJog()
 {
+	if (bShowDebug)	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Yellow, TEXT("START JOG"), true, FVector2D(1.0f));
+	bRequestedJog = true;
+	GetCharacterMovement()->MaxWalkSpeed = CharacterMaxJogSpeed;
 }
 
 void ABaseCharacter::EndJog()
 {
+	if (bShowDebug)	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Yellow, TEXT("END JOG"), true, FVector2D(1.0f));
+	bRequestedJog = false;
 }
 
 void ABaseCharacter::ToggleJog()
 {
+	if (bShowDebug)	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Yellow, TEXT("TOGGLE JOG"), true, FVector2D(1.0f));
+	bRequestedJog = !bRequestedJog;
+	if (bRequestedJog) GetCharacterMovement()->MaxWalkSpeed = CharacterMaxJogSpeed;
 }
 
 void ABaseCharacter::StartSprint()
 {
+	if (bShowDebug)	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Yellow, TEXT("START SPRINT"), true, FVector2D(1.0f));
+	bRequestedSprint = true;
+	GetCharacterMovement()->MaxWalkSpeed = CharacterMaxSprintSpeed;
 }
 
 void ABaseCharacter::EndSprint()
 {
+	if (bShowDebug)	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Yellow, TEXT("END SPRINT"), true, FVector2D(1.0f));
+	bRequestedSprint = false;
 }
 
 void ABaseCharacter::ToggleSprint()
 {
+	if (bShowDebug)	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Yellow, TEXT("TOGGLE SPRINT"), true, FVector2D(1.0f));
+	bRequestedSprint = !bRequestedSprint;
+	if (bRequestedSprint) GetCharacterMovement()->MaxWalkSpeed = CharacterMaxSprintSpeed;
 }
 
 void ABaseCharacter::StartCrouch()
@@ -142,14 +201,21 @@ void ABaseCharacter::ToggleCrouch()
 
 void ABaseCharacter::StartProne()
 {
+	if (bShowDebug)	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Yellow, TEXT("START PRONE"), true, FVector2D(1.0f));
+	bRequestedProne = true;
+	GetCharacterMovement()->MaxWalkSpeed = CharacterMaxProneSpeed;
 }
 
 void ABaseCharacter::EndProne()
 {
+	if (bShowDebug)	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Yellow, TEXT("END PRONE"), true, FVector2D(1.0f));
+	bRequestedProne = false;
 }
 
 void ABaseCharacter::ToggleProne()
 {
+	bRequestedProne = !bRequestedProne;
+	if (bRequestedProne) GetCharacterMovement()->MaxWalkSpeed = CharacterMaxProneSpeed;
 }
 
 // Vision
@@ -165,24 +231,31 @@ void ABaseCharacter::EndFocus()
 
 void ABaseCharacter::StartFreelook()
 {
+	if (bShowDebug)	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Yellow, TEXT("START FREELOOK"), true, FVector2D(1.0f));
+	bRequestedFreelook = true;
 }
 
 void ABaseCharacter::EndFreelook()
 {
+	if (bShowDebug)	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Yellow, TEXT("END FREELOOK"), true, FVector2D(1.0f));
+	bRequestedFreelook = false;
 }
 
 // Interaction
 void ABaseCharacter::Interact()
 {
+	if (bShowDebug)	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Yellow, TEXT("INTERACT"), true, FVector2D(1.0f));
 }
 
 // Action
 void ABaseCharacter::StartGestureWave()
 {
+	if (bShowDebug)	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Yellow, TEXT("START GESTURE WAVE"), true, FVector2D(1.0f));
 }
 
 void ABaseCharacter::EndGestureWave()
 {
+	if (bShowDebug)	GEngine->AddOnScreenDebugMessage(0, 1.0f, FColor::Yellow, TEXT("END GESTURE WAVE"), true, FVector2D(1.0f));
 }
 
 // Generate Character from Data
@@ -202,6 +275,12 @@ void ABaseCharacter::Tick(float DeltaTime)
 	float NewFOV = FMath::FInterpTo(CameraComp->FieldOfView, TargetFOV, DeltaTime, FocusInterpSpeed);
 
 	CameraComp->SetFieldOfView(NewFOV);
+
+	// Set Movement Speed
+	if (!bRequestedCreep && !bRequestedJog && !bRequestedSprint && !bRequestedProne)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = CharacterMaxWalkSpeed;
+	}
 
 }
 
@@ -224,7 +303,7 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ABaseCharacter::StartSprint);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ABaseCharacter::EndSprint);
-	PlayerInputComponent->BindAction("JogToggle", IE_Pressed, this, &ABaseCharacter::ToggleSprint);
+	PlayerInputComponent->BindAction("SprintToggle", IE_Pressed, this, &ABaseCharacter::ToggleSprint);
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ABaseCharacter::Jump);
 
@@ -258,4 +337,6 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("GestureWave", IE_Released, this, &ABaseCharacter::EndGestureWave);
 
 }
+
+
 
